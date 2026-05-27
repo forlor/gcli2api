@@ -47,6 +47,8 @@ ENV_MAPPINGS = {
     "PASSWORD": "password",
     "KEEPALIVE_URL": "keepalive_url",
     "KEEPALIVE_INTERVAL": "keepalive_interval",
+    "AISTUDIO_BASE_URL": "aistudio_base_url",
+    "AISTUDIO_API_KEY": "aistudio_api_key",
 }
 
 
@@ -494,3 +496,35 @@ async def get_keepalive_interval() -> int:
             pass
 
     return int(await get_config_value("keepalive_interval", 60))
+
+
+async def get_aistudio_base_url() -> str:
+    """
+    Get AI Studio base URL setting.
+
+    用于 Google AI Studio API 的基础 URL。
+
+    Environment variable: AISTUDIO_BASE_URL
+    Database config key: aistudio_base_url
+    Default: https://generativelanguage.googleapis.com
+    """
+    return str(
+        await get_config_value(
+            "aistudio_base_url",
+            "https://generativelanguage.googleapis.com",
+            "AISTUDIO_BASE_URL",
+        )
+    )
+
+
+async def get_aistudio_api_key() -> str:
+    """
+    Get AI Studio API key setting.
+
+    用于 Google AI Studio API 认证的 API Key。
+
+    Environment variable: AISTUDIO_API_KEY
+    Database config key: aistudio_api_key
+    Default: "" (未配置)
+    """
+    return str(await get_config_value("aistudio_api_key", "", "AISTUDIO_API_KEY"))

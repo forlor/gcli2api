@@ -2744,6 +2744,8 @@ function populateConfigForm() {
     setConfigField('resourceManagerApiUrl', c.resource_manager_api_url || '');
     setConfigField('serviceUsageApiUrl', c.service_usage_api_url || '');
     setConfigField('antigravityApiUrl', c.antigravity_api_url || '');
+    setConfigField('aistudioBaseUrl', c.aistudio_base_url || '');
+    setConfigField('aistudioApiKey', c.aistudio_api_key || '');
 
     document.getElementById('autoBanEnabled').checked = Boolean(c.auto_ban_enabled);
     setConfigField('autoBanErrorCodes', (c.auto_ban_error_codes || []).join(','));
@@ -2800,6 +2802,8 @@ async function saveConfig() {
             resource_manager_api_url: getValue('resourceManagerApiUrl'),
             service_usage_api_url: getValue('serviceUsageApiUrl'),
             antigravity_api_url: getValue('antigravityApiUrl'),
+            aistudio_base_url: getValue('aistudioBaseUrl'),
+            aistudio_api_key: getValue('aistudioApiKey'),
             auto_ban_enabled: getChecked('autoBanEnabled'),
             auto_ban_error_codes: getValue('autoBanErrorCodes').split(',')
                 .map(c => parseInt(c.trim())).filter(c => !isNaN(c)),

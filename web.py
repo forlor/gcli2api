@@ -26,6 +26,7 @@ from src.router.geminicli.openai import router as geminicli_openai_router
 from src.router.geminicli.gemini import router as geminicli_gemini_router
 from src.router.geminicli.anthropic import router as geminicli_anthropic_router
 from src.router.geminicli.model_list import router as geminicli_model_list_router
+from src.router.aistudio.anthropic import router as aistudio_anthropic_router
 from src.task_manager import shutdown_all_tasks
 from src.panel import router as panel_router
 from src.keeplive import keepalive_service
@@ -137,6 +138,9 @@ app.include_router(antigravity_anthropic_router, prefix="", tags=["Antigravity A
 
 # Geminicli Anthropic Messages 路由 - Anthropic Messages 格式兼容 (Geminicli)
 app.include_router(geminicli_anthropic_router, prefix="", tags=["Geminicli Anthropic Messages"])
+
+# AI Studio Anthropic Messages 路由 - Anthropic Messages 格式兼容 (AI Studio)
+app.include_router(aistudio_anthropic_router, prefix="", tags=["AI Studio Anthropic Messages"])
 
 # Panel路由 - 包含认证、凭证管理和控制面板功能
 app.include_router(panel_router, prefix="", tags=["Panel Interface"])

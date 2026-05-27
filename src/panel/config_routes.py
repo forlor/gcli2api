@@ -64,6 +64,10 @@ async def get_config(token: str = Depends(verify_panel_token)):
         current_config["keepalive_url"] = await config.get_keepalive_url()
         current_config["keepalive_interval"] = await config.get_keepalive_interval()
 
+        # AI Studio 配置
+        current_config["aistudio_base_url"] = await config.get_aistudio_base_url()
+        current_config["aistudio_api_key"] = await config.get_aistudio_api_key()
+
         # 服务器配置
         current_config["host"] = await config.get_server_host()
         current_config["port"] = await config.get_server_port()
@@ -184,6 +188,15 @@ async def save_config(request: ConfigSaveRequest, token: str = Depends(verify_pa
         if "password" in new_config:
             if not isinstance(new_config["password"], str):
                 raise HTTPException(status_code=400, detail="访问密码必须是字符串")
+
+        # 验证 AI Studio 配置
+        if "aistudio_base_url" in new_config:
+            if not isinstance(new_config["aistudio_base_url"], str):
+                raise HTTPException(status_code=400, detail="AI Studio Base URL 必须是字符串")
+
+        if "aistudio_api_key" in new_config:
+            if not isinstance(new_config["aistudio_api_key"], str):
+                raise HTTPException(status_code=400, detail="AI Studio API Key 必须是字符串")
 
         # 获取环境变量锁定的配置键
         env_locked_keys = get_env_locked_keys()
