@@ -87,6 +87,9 @@ async def get_config(token: str = Depends(verify_panel_token)):
             if key not in env_locked_keys:
                 current_config[key] = value
 
+        log.info(f"[AI Studio] 返回 aistudio_base_url={current_config.get('aistudio_base_url', 'NOT_FOUND')}")
+        log.info(f"[AI Studio] 返回 aistudio_api_key={'***' if current_config.get('aistudio_api_key') else current_config.get('aistudio_api_key', 'NOT_FOUND')}")
+
         return JSONResponse(content={"config": current_config, "env_locked": list(env_locked_keys)})
 
     except Exception as e:
@@ -103,6 +106,8 @@ async def save_config(request: ConfigSaveRequest, token: str = Depends(verify_pa
 
         log.debug(f"收到的配置数据: {list(new_config.keys())}")
         log.debug(f"收到的password值: {new_config.get('password', 'NOT_FOUND')}")
+        log.info(f"[AI Studio] 保存 aistudio_base_url={new_config.get('aistudio_base_url', 'NOT_FOUND')}")
+        log.info(f"[AI Studio] 保存 aistudio_api_key={'***' if new_config.get('aistudio_api_key') else new_config.get('aistudio_api_key', 'NOT_FOUND')}")
 
         # 验证配置项
         if "retry_429_max_retries" in new_config:
