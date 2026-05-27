@@ -850,6 +850,19 @@ async function login() {
         if (response.ok) {
             AppState.authToken = data.token;
             localStorage.setItem('gcli2api_auth_token', AppState.authToken);
+
+            // 登录成功后立即预加载配置
+            try {
+                const configResp = await fetch('./config/get', { headers: getAuthHeaders() });
+                if (configResp.ok) {
+                    const configData = await configResp.json();
+                    if (configData.config) {
+                        AppState.currentConfig = configData.config;
+                        AppState.envLockedFields = new Set(configData.env_locked || []);
+                    }
+                }
+            } catch (e) { /* 预加载失败不影响主流程 */ }
+
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('mainSection').classList.remove('hidden');
             showStatus('登录成功', 'success');
@@ -878,6 +891,13 @@ async function autoLogin() {
         });
 
         if (response.ok) {
+            // 保存配置数据，避免切换标签页时重复请求
+            const data = await response.json();
+            if (data.config) {
+                AppState.currentConfig = data.config;
+                AppState.envLockedFields = new Set(data.env_locked || []);
+            }
+
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('mainSection').classList.remove('hidden');
             showStatus('自动登录成功', 'success');
@@ -961,7 +981,10 @@ function switchTab(tabName) {
     const currentContent = document.querySelector('.tab-content.active');
     const targetContent = document.getElementById(tabName + 'Tab');
 
-    // 如果点击的是当前标签页，不做任何操作
+    // 立即触发数据加载（不依赖动画完成）
+    triggerTabDataLoad(tabName);
+
+    // 如果点击的是当前标签页，不做动画
     if (currentContent === targetContent) return;
 
     // 找到目标标签按钮
@@ -1009,14 +1032,11 @@ function switchTab(tabName) {
                         targetContent.style.opacity = '1';
                         targetContent.style.transform = 'translateX(0)';
 
-                        // 清理内联样式并执行数据加载
+                        // 清理内联样式
                         setTimeout(() => {
                             targetContent.style.transition = '';
                             targetContent.style.opacity = '';
                             targetContent.style.transform = '';
-
-                            // 动画完成后触发数据加载
-                            triggerTabDataLoad(tabName);
                         }, 260);
                     });
                 });
@@ -1026,8 +1046,6 @@ function switchTab(tabName) {
         // 如果没有当前内容（首次加载），直接显示目标内容
         if (targetContent) {
             targetContent.classList.add('active');
-            // 直接触发数据加载
-            triggerTabDataLoad(tabName);
         }
     }
 }
